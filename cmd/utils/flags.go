@@ -1769,6 +1769,8 @@ func SetEthConfig(ctx *cli.Context, stack *node.Node, cfg *ethconfig.Config) {
 			}
 			cfg.ProtocolVersions = append(cfg.ProtocolVersions, uint(version))
 		}
+	} else {
+		cfg.ProtocolVersions = eth.DefaultProtocolVersions
 	}
 
 	// Set DNS discovery defaults for hard coded networks with DNS defaults.
