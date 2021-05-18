@@ -82,6 +82,7 @@ func (h *testEthHandler) Handle(peer *eth.Peer, packet eth.Packet) error {
 
 // Tests that peers are correctly accepted (or rejected) based on the advertised
 // fork IDs in the protocol handshake.
+func TestForkIDSplit64(t *testing.T) { testForkIDSplit(t, eth.ETH64) }
 func TestForkIDSplit65(t *testing.T) { testForkIDSplit(t, eth.ETH65) }
 func TestForkIDSplit66(t *testing.T) { testForkIDSplit(t, eth.ETH66) }
 
@@ -238,6 +239,7 @@ func testForkIDSplit(t *testing.T, protocol uint) {
 }
 
 // Tests that received transactions are added to the local pool.
+func TestRecvTransactions64(t *testing.T) { testRecvTransactions(t, eth.ETH64) }
 func TestRecvTransactions65(t *testing.T) { testRecvTransactions(t, eth.ETH65) }
 func TestRecvTransactions66(t *testing.T) { testRecvTransactions(t, eth.ETH66) }
 
@@ -296,6 +298,7 @@ func testRecvTransactions(t *testing.T, protocol uint) {
 }
 
 // This test checks that pending transactions are sent.
+func TestSendTransactions64(t *testing.T) { testSendTransactions(t, eth.ETH64) }
 func TestSendTransactions65(t *testing.T) { testSendTransactions(t, eth.ETH65) }
 func TestSendTransactions66(t *testing.T) { testSendTransactions(t, eth.ETH66) }
 
@@ -356,6 +359,18 @@ func testSendTransactions(t *testing.T, protocol uint) {
 	seen := make(map[common.Hash]struct{})
 	for len(seen) < len(insert) {
 		switch protocol {
+		case 64:
+			select {
+			case <-anns:
+				t.Errorf("tx announce received on pre eth/65")
+			case txs := <-bcasts:
+				for _, tx := range txs {
+					if _, ok := seen[tx.Hash()]; ok {
+						t.Errorf("duplicate transaction announced: %x", tx.Hash())
+					}
+					seen[tx.Hash()] = struct{}{}
+				}
+			}
 		case 65, 66:
 			select {
 			case hashes := <-anns:
@@ -382,6 +397,7 @@ func testSendTransactions(t *testing.T, protocol uint) {
 
 // Tests that transactions get propagated to all attached peers, either via direct
 // broadcasts or via announcements/retrievals.
+func TestTransactionPropagation64(t *testing.T) { testTransactionPropagation(t, eth.ETH64) }
 func TestTransactionPropagation65(t *testing.T) { testTransactionPropagation(t, eth.ETH65) }
 func TestTransactionPropagation66(t *testing.T) { testTransactionPropagation(t, eth.ETH66) }
 
@@ -520,8 +536,8 @@ func testCheckpointChallenge(t *testing.T, syncmode downloader.SyncMode, checkpo
 	defer p2pLocal.Close()
 	defer p2pRemote.Close()
 
-	local := eth.NewPeer(eth.ETH65, p2p.NewPeer(enode.ID{1}, "", nil), p2pLocal, handler.txpool)
-	remote := eth.NewPeer(eth.ETH65, p2p.NewPeer(enode.ID{2}, "", nil), p2pRemote, handler.txpool)
+	local := eth.NewPeer(eth.ETH64, p2p.NewPeer(enode.ID{1}, "", nil), p2pLocal, handler.txpool)
+	remote := eth.NewPeer(eth.ETH64, p2p.NewPeer(enode.ID{2}, "", nil), p2pRemote, handler.txpool)
 	defer local.Close()
 	defer remote.Close()
 
@@ -610,8 +626,8 @@ func testBroadcastBlock(t *testing.T, peers, bcasts int) {
 		defer sourcePipe.Close()
 		defer sinkPipe.Close()
 
-		sourcePeer := eth.NewPeer(eth.ETH65, p2p.NewPeer(enode.ID{byte(i)}, "", nil), sourcePipe, nil)
-		sinkPeer := eth.NewPeer(eth.ETH65, p2p.NewPeer(enode.ID{0}, "", nil), sinkPipe, nil)
+		sourcePeer := eth.NewPeer(eth.ETH64, p2p.NewPeer(enode.ID{byte(i)}, "", nil), sourcePipe, nil)
+		sinkPeer := eth.NewPeer(eth.ETH64, p2p.NewPeer(enode.ID{0}, "", nil), sinkPipe, nil)
 		defer sourcePeer.Close()
 		defer sinkPeer.Close()
 
@@ -662,6 +678,7 @@ func testBroadcastBlock(t *testing.T, peers, bcasts int) {
 
 // Tests that a propagated malformed block (uncles or transactions don't match
 // with the hashes in the header) gets discarded and not broadcast forward.
+func TestBroadcastMalformedBlock64(t *testing.T) { testBroadcastMalformedBlock(t, eth.ETH64) }
 func TestBroadcastMalformedBlock65(t *testing.T) { testBroadcastMalformedBlock(t, eth.ETH65) }
 func TestBroadcastMalformedBlock66(t *testing.T) { testBroadcastMalformedBlock(t, eth.ETH66) }
 

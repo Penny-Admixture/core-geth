@@ -88,6 +88,7 @@ func newTestHandlerWithBlocksWithOpts(blocks int, mode downloader.SyncMode, gen 
 }
 
 // Tests that fast sync is disabled after a successful sync cycle.
+func TestFastSyncDisabling64(t *testing.T) { testFastSyncDisabling(t, eth.ETH64) }
 func TestFastSyncDisabling65(t *testing.T) { testFastSyncDisabling(t, eth.ETH65) }
 func TestFastSyncDisabling66(t *testing.T) { testFastSyncDisabling(t, eth.ETH66) }
 
