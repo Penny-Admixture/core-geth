@@ -136,6 +136,9 @@ func makeConfigNode(ctx *cli.Context) (*node.Node, gethConfig) {
 	}
 	applyMetricConfig(ctx, &cfg)
 
+	// Log CLI flags used.
+	stack.LoggedCliFlags = node.LogCliFlags(ctx)
+
 	return stack, cfg
 }
 

@@ -877,6 +877,7 @@ func BenchmarkRPC_BlockNumber(b *testing.B) {
 var allRPCMethods = []string{
 	"admin_addPeer",
 	"admin_addTrustedPeer",
+	"admin_cliFlags",
 	"admin_datadir",
 	"admin_ecbp1100",
 	"admin_exportChain",

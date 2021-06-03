@@ -61,6 +61,8 @@ type Node struct {
 
 	databases map[*closeTrackingDB]struct{} // All open databases
 
+	LoggedCliFlags LoggedCliFlags // Keeps cli flags used on this instance
+
 	inprocOpenRPC *go_openrpc_reflect.Document
 	ipcOpenRPC    *go_openrpc_reflect.Document
 	httpOpenRPC   *go_openrpc_reflect.Document

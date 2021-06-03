@@ -326,6 +326,11 @@ func (api *publicAdminAPI) Datadir() string {
 	return api.node.DataDir()
 }
 
+// CliFlags returns all cli defined flags and with their default or passed in values.
+func (api *publicAdminAPI) CliFlags() interface{} {
+	return api.node.LoggedCliFlags
+}
+
 // publicWeb3API offers helper utils
 type publicWeb3API struct {
 	stack *Node
